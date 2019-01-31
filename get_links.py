@@ -7,13 +7,16 @@ import re
 wiki_text_file = 'python_wiki.txt'
 links_text_file = 'links.txt'
 d_brakets = r'\[{2}'
-code = r'\[{2}([^\|\]]*)(\||\]){0,2}'
+d_brakets2 = r'\]{2}'
+code = r'\[{2}([^\|\]]*)(\|{0,1}|\]{2})'
 regexp_d_brakets = re.compile(d_brakets)
+regexp_d_brakets2 = re.compile(d_brakets2)
 regexp = re.compile(code)
 
 with open(wiki_text_file, 'r', encoding='utf-8') as f:
     text = f.read()
     matches_d_brakets = regexp_d_brakets.findall(text)
+    matches_d_brakets2 = regexp_d_brakets2.findall(text)
     matches = regexp.findall(text)
 
 links = list(sorted(set(l[0] for l in matches)))
@@ -26,12 +29,10 @@ with open(links_text_file, 'r', encoding='utf-8') as f:
     lines = len([lines for lines in f])
 
 # Подготовка данных для вывода
-align = 65
-fill = '<'
-
 attributes = (
 'Обработка файла:',
 'Количество совпадений по шаблону "' + d_brakets + '":',
+'Количество совпадений по шаблону "' + d_brakets2 + '":',
 'Количество совпадений по шаблону "' + code + '":',
 'Количество уникальных ссылок:',
 'Запись ссылок в файл:',
@@ -41,11 +42,15 @@ attributes = (
 values = (
 wiki_text_file,
 len(matches_d_brakets),
+len(matches_d_brakets2),
 len(matches),
 len(links),
 links_text_file,
 lines
 )
+
+fill = '<'
+align = max([len(str_lengt) for str_lengt in attributes])
 
 # Захотел применить функцию zip и 
 # сократить кол-во строк print для удобства изменения форматирования вывода
